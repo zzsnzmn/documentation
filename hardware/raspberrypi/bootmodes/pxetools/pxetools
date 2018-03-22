@@ -100,7 +100,7 @@ def add():
     cmd("echo \"{} *(rw,sync,no_subtree_check,no_root_squash)\" >> /etc/exports".format(nfs_path))
     cmd("exportfs -a")
     
-    cmdline_txt = "dwc_otg.lpm_enable=0 root=/dev/nfs nfsroot={}:{} rw ip=dhcp rootwait elevator=deadline".format(NFS_IP, nfs_path)
+    cmdline_txt = "dwc_otg.lpm_enable=0 root=/dev/nfs nfsroot={}:{},vers=3 rw ip=dhcp rootwait elevator=deadline".format(NFS_IP, nfs_path)
     cmd("echo \"{}\" > {}/cmdline.txt".format(cmdline_txt, tftp_path))
     cmd("echo \"{}\" > {}/owner".format(owner, tftp_path))
     cmd("echo \"{}\" > {}/name".format(name, tftp_path))
@@ -218,7 +218,7 @@ def list():
 if __name__ == "__main__":
     if os.geteuid() != 0:
         exit("Please run with sudo or as root user")
-
+    # TODO: figure out if this is right or if there's a more portable way to do this
     LAN = cmd('ip -4 addr show dev eth0 | grep inet | cut -d " " -f6 | xargs ipcalc | grep Network | cut -d " " -f4', print_cmd=False).rstrip()
     NFS_IP = cmd('ifconfig eth0 | grep "inet addr" | cut -d " " -f 12 | cut -d ":" -f 2', print_cmd=False).rstrip()
 
